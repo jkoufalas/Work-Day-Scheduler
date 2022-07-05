@@ -44,16 +44,14 @@ function init(){
 
 function processEventTime(){
     var curTime  = moment().format('H'); 
-    console.log("---- "+curTime);
-
     for(var i=9;i<=17;i++){
         if(i<curTime){
             $('#hour-'+i).children('TEXTAREA').addClass('past');
         }
-        else if(i === curTime){
-            $('#hour-'+i).children('TEXTAREA').addClass('present');
-        }else{
+        else if(i > curTime){
             $('#hour-'+i).children('TEXTAREA').addClass('future');
+        }else{
+            $('#hour-'+i).children('TEXTAREA').addClass('present');
         }
     }
 
@@ -62,7 +60,6 @@ function processEventTime(){
 
 
 function saveWorkFromButton(event){
-    console.log("Got Here Button");
     var btnClicked = $(event.target);
     var label = btnClicked.parent();
     processSave(btnClicked, label);
@@ -89,7 +86,6 @@ function processSave(btnClicked, label){
 
         }
     }
-    console.log(schedule);
     localStorage.setItem("scheduler", JSON.stringify(schedule));
     $('#notification').show();
     hideNotification();
