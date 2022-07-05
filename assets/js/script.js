@@ -36,8 +36,9 @@ function init(){
             schedule.push(sceduleElement);
             $('#'+hour).children('TEXTAREA').text(content);
         }
-        $('#notification').hide();
+        
     }
+    $('#notification').hide();
     processEventTime();
 }
 
