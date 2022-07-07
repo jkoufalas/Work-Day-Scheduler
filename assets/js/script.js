@@ -5,11 +5,13 @@ var curDate = today.format("dddd, DD MMMM");
 $("#currentDay").text(curDate);
 
 var schedule = []; 
+var curEventList = [];
 
 
 
 function init(){
     schedule = [];
+    curEventList = [];
     var localSchedule = JSON.parse(localStorage.getItem("scheduler"));
     if(localSchedule == undefined){
         for(var i=9;i<=17;i++){
@@ -40,6 +42,37 @@ function init(){
     }
     $('#notification').hide();
     processEventTime();
+    timerEventProcess();
+}
+
+function timerEventProcess(){
+    var reprocessEventInterval = setInterval(function() {
+        var curTime  = moment().format('H'); 
+        for(var i=9;i<=17;i++){
+            if(curEventList[i-9] == "past"){
+                $('#hour-'+i).children('TEXTAREA').removeClass('past');
+            }
+            else if(curEventList[i-9] == "future"){
+                $('#hour-'+i).children('TEXTAREA').removeClass('future');
+            }else{
+                $('#hour-'+i).children('TEXTAREA').removeClass('present');
+            }
+        }
+        curEventList = [];
+        for(var i=9;i<=17;i++){
+            if(i<curTime){
+                $('#hour-'+i).children('TEXTAREA').addClass('past');
+                curEventList.push("past");
+            }
+            else if(i > curTime){
+                $('#hour-'+i).children('TEXTAREA').addClass('future');
+                curEventList.push("future");
+            }else{
+                $('#hour-'+i).children('TEXTAREA').addClass('present');
+                curEventList.push("present");
+            }
+        }
+    }, 60000);
 }
 
 function processEventTime(){
@@ -47,11 +80,14 @@ function processEventTime(){
     for(var i=9;i<=17;i++){
         if(i<curTime){
             $('#hour-'+i).children('TEXTAREA').addClass('past');
+            curEventList.push("past");
         }
         else if(i > curTime){
             $('#hour-'+i).children('TEXTAREA').addClass('future');
+            curEventList.push("future");
         }else{
             $('#hour-'+i).children('TEXTAREA').addClass('present');
+            curEventList.push("present");
         }
     }
 
@@ -87,7 +123,6 @@ function processSave(btnClicked, label){
         }
     }
     localStorage.setItem("scheduler", JSON.stringify(schedule));
-    $('#notification').show();
     hideNotification();
 
 }
@@ -96,7 +131,10 @@ function hideNotification() {
     var counter = 0;
     var notificationInterval = setInterval(function() {
         counter++;
-        if(counter === 10){
+        if(counter === 5){
+            $('#notification').show();
+        }
+        if(counter === 20){
             $('#notification').hide();
             clearInterval(notificationInterval);
         }
